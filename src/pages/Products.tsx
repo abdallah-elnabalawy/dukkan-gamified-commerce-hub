@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Slider } from "@/components/ui/slider";
@@ -192,7 +193,9 @@ const enhancedProducts: Product[] = allProducts.map(product => ({
   description: product.description || `${product.name} - high quality product`,
   reviewCount: product.reviewCount || 0,
   stock: product.stock || 0,
-  gamificationPoints: product.gamificationPoints || 0
+  gamificationPoints: product.gamificationPoints || 0,
+  isNew: product.isNew || false,
+  discountPercentage: product.discountPercentage || 0
 }));
 
 const Products = () => {

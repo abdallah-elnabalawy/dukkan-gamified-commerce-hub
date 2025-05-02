@@ -1,4 +1,3 @@
-
 // Products mock data
 export interface Product {
   id: number;
@@ -11,6 +10,8 @@ export interface Product {
   reviewCount: number;
   stock: number;
   gamificationPoints: number;
+  isNew?: boolean;
+  discountPercentage?: number;
 }
 
 // Categories mock data
