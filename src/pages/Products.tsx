@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Slider } from "@/components/ui/slider";
@@ -10,6 +9,7 @@ import { ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import { Product } from "@/lib/data";
 
 // Sample product data - in a real app this would come from an API
 const productsData = [
@@ -21,7 +21,11 @@ const productsData = [
     image: "https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGVhcmJ1ZHN8ZW58MHx8MHx8fDA%3D",
     category: "electronics",
     discountPercentage: 15,
-    isNew: true
+    isNew: true,
+    description: "Premium wireless earbuds with noise cancellation",
+    reviewCount: 245,
+    stock: 45,
+    gamificationPoints: 130
   },
   {
     id: "2",
@@ -31,7 +35,11 @@ const productsData = [
     image: "https://images.unsplash.com/photo-1617043983671-adaadcaa2460?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8c21hcnQlMjB3YXRjaHxlbnwwfHwwfHx8MA%3D%3D",
     category: "electronics",
     discountPercentage: 0,
-    isNew: false
+    isNew: false,
+    description: "Feature-rich smartwatch with health monitoring",
+    reviewCount: 189,
+    stock: 28,
+    gamificationPoints: 250
   },
   {
     id: "3",
@@ -85,7 +93,11 @@ const fashionProducts = [
     image: "https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZGVuaW0lMjBqYWNrZXR8ZW58MHx8MHx8fDA%3D",
     category: "fashion",
     discountPercentage: 0,
-    isNew: false
+    isNew: false,
+    description: "Stylish and durable denim jacket for all seasons",
+    reviewCount: 120,
+    stock: 35,
+    gamificationPoints: 80
   },
   {
     id: "8",
@@ -95,7 +107,11 @@ const fashionProducts = [
     image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c25lYWtlcnN8ZW58MHx8MHx8fDA%3D",
     category: "fashion",
     discountPercentage: 15,
-    isNew: true
+    isNew: true,
+    description: "Comfortable and stylish leather sneakers",
+    reviewCount: 150,
+    stock: 20,
+    gamificationPoints: 150
   }
 ];
 
@@ -108,7 +124,11 @@ const homeProducts = [
     image: "https://images.unsplash.com/photo-1558002038-1055907dc842?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2VjdXJpdHklMjBjYW1lcmF8ZW58MHx8MHx8fDA%3D",
     category: "home",
     discountPercentage: 10,
-    isNew: true
+    isNew: true,
+    description: "Complete home security system with smart features",
+    reviewCount: 87,
+    stock: 15,
+    gamificationPoints: 300
   },
   {
     id: "10",
@@ -118,7 +138,11 @@ const homeProducts = [
     image: "https://images.unsplash.com/photo-1584990347449-656ad391f295?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y29va3dhcmV8ZW58MHx8MHx8fDA%3D",
     category: "home",
     discountPercentage: 5,
-    isNew: false
+    isNew: false,
+    description: "High-quality stainless steel cookware for all meals",
+    reviewCount: 100,
+    stock: 30,
+    gamificationPoints: 100
   }
 ];
 
@@ -131,7 +155,11 @@ const sportsProducts = [
     image: "https://images.unsplash.com/photo-1592432678016-e910b452f9a2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8eW9nYSUyMG1hdHxlbnwwfHwwfHx8MA%3D%3D",
     category: "sports",
     discountPercentage: 0,
-    isNew: false
+    isNew: false,
+    description: "High-quality, non-slip yoga mat for all yoga styles",
+    reviewCount: 156,
+    stock: 50,
+    gamificationPoints: 50
   },
   {
     id: "12",
@@ -141,7 +169,11 @@ const sportsProducts = [
     image: "https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bW91bnRhaW4lMjBiaWtlfGVufDB8fDB8fHww",
     category: "sports",
     discountPercentage: 12,
-    isNew: true
+    isNew: true,
+    description: "High-performance mountain bike for all terrains",
+    reviewCount: 200,
+    stock: 25,
+    gamificationPoints: 200
   }
 ];
 
@@ -153,6 +185,16 @@ const allProducts = [
   ...sportsProducts
 ];
 
+// Add the missing properties to make products compatible with the Product interface
+const enhancedProducts: Product[] = allProducts.map(product => ({
+  ...product,
+  id: parseInt(product.id), // Convert string ID to number
+  description: product.description || `${product.name} - high quality product`,
+  reviewCount: product.reviewCount || 0,
+  stock: product.stock || 0,
+  gamificationPoints: product.gamificationPoints || 0
+}));
+
 const Products = () => {
   const { category } = useParams();
   const [priceRange, setPriceRange] = useState([0, 1500]);
@@ -160,9 +202,9 @@ const Products = () => {
   const [filterNewOnly, setFilterNewOnly] = useState(false);
   
   // Filter products based on category
-  const filteredProducts = allProducts.filter(product => {
+  const filteredProducts = enhancedProducts.filter(product => {
     // If category is provided, filter by it
-    if (category && product.category !== category) {
+    if (category && product.category.toLowerCase() !== category.toLowerCase()) {
       return false;
     }
     
@@ -189,7 +231,7 @@ const Products = () => {
       return b.rating - a.rating;
     }
     // Default: newest
-    return a.id < b.id ? 1 : -1;
+    return b.id - a.id;
   });
   
   const getCategoryTitle = () => {
@@ -327,13 +369,7 @@ const Products = () => {
               {sortedProducts.map(product => (
                 <ProductCard 
                   key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  price={product.price}
-                  rating={product.rating}
-                  image={product.image}
-                  discountPercentage={product.discountPercentage}
-                  isNew={product.isNew}
+                  product={product}
                 />
               ))}
             </div>
