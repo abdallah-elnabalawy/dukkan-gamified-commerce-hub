@@ -1,3 +1,4 @@
+
 // Products mock data
 export interface Product {
   id: number;
@@ -55,26 +56,38 @@ export interface Challenge {
   expiresIn?: string; // "2d 5h" format
 }
 
-// Mock products data
+// Mock categories data with improved images
+export const categories: Category[] = [
+  { id: 1, name: "Electronics", image: "https://images.unsplash.com/photo-1550009158-9ebf69173e03?q=80&w=500&auto=format&fit=crop" },
+  { id: 2, name: "Fashion", image: "https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=500&auto=format&fit=crop" },
+  { id: 3, name: "Home & Kitchen", image: "https://images.unsplash.com/photo-1556911220-bda9f7b07446?q=80&w=500&auto=format&fit=crop" },
+  { id: 4, name: "Sports & Outdoors", image: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=500&auto=format&fit=crop" },
+  { id: 5, name: "Beauty", image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=500&auto=format&fit=crop" },
+  { id: 6, name: "Furniture", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=500&auto=format&fit=crop" }
+];
+
+// Mock products data with more products and better images
 export const products: Product[] = [
+  // Electronics Category
   {
     id: 1,
     name: "Premium Wireless Headphones",
     description: "Immersive sound quality with noise cancellation and 20-hour battery life.",
     price: 249.99,
-    image: "/headphones.jpg",
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=500&auto=format&fit=crop",
     category: "Electronics",
     rating: 4.8,
     reviewCount: 423,
     stock: 15,
-    gamificationPoints: 250
+    gamificationPoints: 250,
+    isNew: true
   },
   {
     id: 2,
     name: "Smart Fitness Watch",
     description: "Track your health metrics and workouts with this water-resistant smart watch.",
     price: 199.99,
-    image: "/smartwatch.jpg",
+    image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=500&auto=format&fit=crop",
     category: "Electronics",
     rating: 4.5,
     reviewCount: 287,
@@ -83,22 +96,23 @@ export const products: Product[] = [
   },
   {
     id: 3,
-    name: "Ergonomic Office Chair",
-    description: "Comfortable design with lumbar support for long working hours.",
-    price: 349.99,
-    image: "/chair.jpg",
-    category: "Furniture",
+    name: "4K Ultra HD Smart TV",
+    description: "Stunning 4K resolution with smart features for an immersive viewing experience.",
+    price: 799.99,
+    image: "https://images.unsplash.com/photo-1593784991095-a205069470b6?q=80&w=500&auto=format&fit=crop",
+    category: "Electronics",
     rating: 4.7,
     reviewCount: 189,
     stock: 8,
-    gamificationPoints: 350
+    gamificationPoints: 350,
+    discountPercentage: 10
   },
   {
     id: 4,
     name: "Portable Bluetooth Speaker",
     description: "Waterproof speaker with 360° sound and 12-hour playtime.",
     price: 89.99,
-    image: "/speaker.jpg",
+    image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?q=80&w=500&auto=format&fit=crop",
     category: "Electronics",
     rating: 4.6,
     reviewCount: 352,
@@ -110,35 +124,160 @@ export const products: Product[] = [
     name: "Professional Camera Drone",
     description: "4K video recording with stabilized gimbal and 30-minute flight time.",
     price: 899.99,
-    image: "/drone.jpg",
+    image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=500&auto=format&fit=crop",
     category: "Electronics",
     rating: 4.9,
     reviewCount: 128,
     stock: 5,
-    gamificationPoints: 900
+    gamificationPoints: 900,
+    isNew: true
   },
+  
+  // Fashion Category
   {
     id: 6,
     name: "Designer Sunglasses",
     description: "UV protection with polarized lenses and durable titanium frame.",
     price: 159.99,
-    image: "/sunglasses.jpg",
+    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=500&auto=format&fit=crop",
     category: "Fashion",
     rating: 4.4,
     reviewCount: 215,
     stock: 23,
     gamificationPoints: 160
+  },
+  {
+    id: 7,
+    name: "Classic Denim Jacket",
+    description: "Timeless denim jacket with comfortable fit and durable construction.",
+    price: 79.99,
+    image: "https://images.unsplash.com/photo-1611312449408-fcece27cdbb7?q=80&w=500&auto=format&fit=crop",
+    category: "Fashion",
+    rating: 4.3,
+    reviewCount: 178,
+    stock: 35,
+    gamificationPoints: 80,
+    discountPercentage: 15
+  },
+  {
+    id: 8,
+    name: "Leather Crossbody Bag",
+    description: "Elegant leather bag with adjustable strap and multiple compartments.",
+    price: 129.99,
+    image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?q=80&w=500&auto=format&fit=crop",
+    category: "Fashion",
+    rating: 4.6,
+    reviewCount: 142,
+    stock: 18,
+    gamificationPoints: 130
+  },
+  
+  // Home & Kitchen Category
+  {
+    id: 9,
+    name: "Smart Coffee Maker",
+    description: "App-controlled coffee machine with programmable brewing schedules.",
+    price: 149.99,
+    image: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?q=80&w=500&auto=format&fit=crop",
+    category: "Home & Kitchen",
+    rating: 4.7,
+    reviewCount: 203,
+    stock: 12,
+    gamificationPoints: 150
+  },
+  {
+    id: 10,
+    name: "Premium Knife Set",
+    description: "Professional-grade kitchen knives with ergonomic handles and storage block.",
+    price: 199.99,
+    image: "https://images.unsplash.com/photo-1593618998160-e34014e67546?q=80&w=500&auto=format&fit=crop",
+    category: "Home & Kitchen",
+    rating: 4.8,
+    reviewCount: 167,
+    stock: 9,
+    gamificationPoints: 200,
+    isNew: true
+  },
+  
+  // Sports & Outdoors Category
+  {
+    id: 11,
+    name: "Mountain Bike",
+    description: "All-terrain bike with 21 speeds and durable aluminum frame.",
+    price: 499.99,
+    image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?q=80&w=500&auto=format&fit=crop",
+    category: "Sports & Outdoors",
+    rating: 4.5,
+    reviewCount: 183,
+    stock: 6,
+    gamificationPoints: 500
+  },
+  {
+    id: 12,
+    name: "Yoga Mat Kit",
+    description: "Non-slip yoga mat with carry strap, blocks, and towel.",
+    price: 59.99,
+    image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=500&auto=format&fit=crop",
+    category: "Sports & Outdoors",
+    rating: 4.6,
+    reviewCount: 215,
+    stock: 24,
+    gamificationPoints: 60
+  },
+  
+  // Beauty Category
+  {
+    id: 13,
+    name: "Premium Skincare Set",
+    description: "Complete facial care routine with cleanser, toner, and moisturizer.",
+    price: 89.99,
+    image: "https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=500&auto=format&fit=crop",
+    category: "Beauty",
+    rating: 4.7,
+    reviewCount: 196,
+    stock: 20,
+    gamificationPoints: 90,
+    discountPercentage: 5
+  },
+  {
+    id: 14,
+    name: "Hair Styling Kit",
+    description: "Professional-grade hair dryer, straightener, and curling iron set.",
+    price: 179.99,
+    image: "https://images.unsplash.com/photo-1522338140262-f46f5913618a?q=80&w=500&auto=format&fit=crop",
+    category: "Beauty",
+    rating: 4.4,
+    reviewCount: 154,
+    stock: 15,
+    gamificationPoints: 180
+  },
+  
+  // Furniture Category
+  {
+    id: 15,
+    name: "Ergonomic Office Chair",
+    description: "Comfortable design with lumbar support for long working hours.",
+    price: 349.99,
+    image: "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?q=80&w=500&auto=format&fit=crop",
+    category: "Furniture",
+    rating: 4.7,
+    reviewCount: 189,
+    stock: 8,
+    gamificationPoints: 350
+  },
+  {
+    id: 16,
+    name: "Modern Coffee Table",
+    description: "Minimalist design with solid wood construction and metal accents.",
+    price: 249.99,
+    image: "https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?q=80&w=500&auto=format&fit=crop",
+    category: "Furniture",
+    rating: 4.5,
+    reviewCount: 132,
+    stock: 7,
+    gamificationPoints: 250,
+    isNew: true
   }
-];
-
-// Mock categories data
-export const categories: Category[] = [
-  { id: 1, name: "Electronics", image: "/electronics.jpg" },
-  { id: 2, name: "Fashion", image: "/fashion.jpg" },
-  { id: 3, name: "Home & Kitchen", image: "/home-kitchen.jpg" },
-  { id: 4, name: "Sports & Outdoors", image: "/sports.jpg" },
-  { id: 5, name: "Beauty", image: "/beauty.jpg" },
-  { id: 6, name: "Furniture", image: "/furniture.jpg" }
 ];
 
 // Mock user gamification profile
