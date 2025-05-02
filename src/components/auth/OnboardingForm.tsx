@@ -1,14 +1,42 @@
 
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Define the form schema with Zod
+const formSchema = z.object({
+  interest: z.string().min(1, "Please select an interest"),
+  referralSource: z.string().min(1, "Please tell us how you heard about us"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function OnboardingForm() {
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const [selectedInterest, setSelectedInterest] = useState<string>("");
+  
+  // Initialize the form with React Hook Form
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      interest: "",
+      referralSource: "",
+    },
+  });
+
+  const handleRegister = (values: FormValues) => {
     // Simulate registration
     toast({
       title: "Account created!",
@@ -48,26 +76,84 @@ export default function OnboardingForm() {
         </div>
       </div>
       
-      <form onSubmit={handleRegister} className="space-y-4">
-        <div className="space-y-2">
-          <Label>What are you most interested in?</Label>
-          <div className="grid grid-cols-2 gap-2">
-            <Button type="button" variant="outline" className="justify-start">Electronics</Button>
-            <Button type="button" variant="outline" className="justify-start">Fashion</Button>
-            <Button type="button" variant="outline" className="justify-start">Home & Kitchen</Button>
-            <Button type="button" variant="outline" className="justify-start">Sports</Button>
-          </div>
-        </div>
-        
-        <div className="space-y-2">
-          <Label>How did you hear about us?</Label>
-          <Input placeholder="Select an option" />
-        </div>
-        
-        <Button type="submit" className="w-full bg-dukkan-purple hover:bg-dukkan-purple/90">
-          Complete Registration
-        </Button>
-      </form>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleRegister)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="interest"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>What are you most interested in?</FormLabel>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    type="button" 
+                    variant={selectedInterest === "Electronics" ? "default" : "outline"} 
+                    className="justify-start"
+                    onClick={() => {
+                      setSelectedInterest("Electronics");
+                      field.onChange("Electronics");
+                    }}
+                  >
+                    Electronics
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant={selectedInterest === "Fashion" ? "default" : "outline"} 
+                    className="justify-start"
+                    onClick={() => {
+                      setSelectedInterest("Fashion");
+                      field.onChange("Fashion");
+                    }}
+                  >
+                    Fashion
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant={selectedInterest === "Home & Kitchen" ? "default" : "outline"} 
+                    className="justify-start"
+                    onClick={() => {
+                      setSelectedInterest("Home & Kitchen");
+                      field.onChange("Home & Kitchen");
+                    }}
+                  >
+                    Home & Kitchen
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant={selectedInterest === "Sports" ? "default" : "outline"} 
+                    className="justify-start"
+                    onClick={() => {
+                      setSelectedInterest("Sports");
+                      field.onChange("Sports");
+                    }}
+                  >
+                    Sports
+                  </Button>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="referralSource"
+            render={({ field }) => (
+              <FormItem className="space-y-2">
+                <FormLabel>How did you hear about us?</FormLabel>
+                <FormControl>
+                  <Input placeholder="Select an option" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <Button type="submit" className="w-full bg-dukkan-purple hover:bg-dukkan-purple/90">
+            Complete Registration
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 }
