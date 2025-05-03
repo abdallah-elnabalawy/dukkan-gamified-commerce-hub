@@ -5,16 +5,23 @@ import { Product } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { useAddToCart } from "@/hooks/useCart";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const addToCart = () => {
-    toast({
-      title: "Added to Cart",
-      description: `${product.name} has been added to your cart. +${product.gamificationPoints} XP!`,
+  const { mutate: addToCart } = useAddToCart();
+
+  const handleAddToCart = () => {
+    addToCart({ productId: product.id, quantity: 1 }, {
+      onSuccess: () => {
+        toast({
+          title: "Added to Cart",
+          description: `${product.name} has been added to your cart. +${product.gamificationPoints} XP!`,
+        });
+      }
     });
   };
 
@@ -79,7 +86,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
         
         <Button 
-          onClick={addToCart}
+          onClick={handleAddToCart}
           className="w-full mt-4 bg-dukkan-purple hover:bg-dukkan-purple/90 flex items-center justify-center gap-2"
         >
           <ShoppingCart className="h-4 w-4" />

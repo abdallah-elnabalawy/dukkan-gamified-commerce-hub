@@ -21,3 +21,27 @@ export const useAddToCart = () => {
     },
   });
 };
+
+export const useUpdateCartItem = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ productId, quantity }: { productId: number; quantity: number }) => 
+      cartService.updateCartItem(productId, quantity),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+  });
+};
+
+export const useRemoveFromCart = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (productId: number) => 
+      cartService.removeFromCart(productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
+    },
+  });
+};

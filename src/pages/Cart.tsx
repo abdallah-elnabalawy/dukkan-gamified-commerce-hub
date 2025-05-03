@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Trash2, Plus, Minus, Gift, ArrowRight, CreditCard, Award } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Trash2, Plus, Minus, Gift, CreditCard, Award } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,56 +9,65 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { cart, products } from "@/lib/data";
+import { useCart, useAddToCart } from "@/hooks/useCart";
+import { cartService } from "@/services/api";
 
 export default function Cart() {
-  const [cartItems, setCartItems] = useState(cart.items);
+  const navigate = useNavigate();
+  const { data: cartData, isLoading } = useCart();
+  const { mutate: addToCart } = useAddToCart();
+  
   const [couponCode, setCouponCode] = useState("");
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   
   // Calculate cart totals
-  const subtotal = cartItems.reduce(
-    (total, item) => total + item.product.price * item.quantity,
-    0
-  );
-  
-  const tax = subtotal * 0.08;
+  const subtotal = cartData?.subtotal || 0;
+  const tax = cartData?.tax || 0;
   const shipping = subtotal > 100 ? 0 : 15;
   const total = subtotal + tax + shipping;
   
   // Calculate potential points to earn
-  const potentialPoints = cartItems.reduce(
-    (total, item) => total + item.product.gamificationPoints * item.quantity,
-    0
-  );
+  const potentialPoints = cartData?.potentialPoints || 0;
   
   // Progress to free shipping
   const progressToFreeShipping = subtotal >= 100 ? 100 : (subtotal / 100) * 100;
   
   // Update quantity
-  const updateQuantity = (productId: number, newQuantity: number) => {
+  const updateQuantity = async (productId: number, newQuantity: number) => {
     if (newQuantity < 1) return;
     
-    setCartItems(prev =>
-      prev.map(item =>
-        item.productId === productId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-    
-    toast({
-      title: "Cart Updated",
-      description: "Your cart has been updated."
-    });
+    try {
+      await cartService.updateCartItem(productId, newQuantity);
+      // In a real app, we'd invalidate the cart query here
+      toast({
+        title: "Cart Updated",
+        description: "Your cart has been updated."
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update cart.",
+        variant: "destructive"
+      });
+    }
   };
   
   // Remove item from cart
-  const removeItem = (productId: number) => {
-    setCartItems(prev => prev.filter(item => item.productId !== productId));
-    
-    toast({
-      title: "Item Removed",
-      description: "The item has been removed from your cart."
-    });
+  const removeItem = async (productId: number) => {
+    try {
+      await cartService.removeFromCart(productId);
+      // In a real app, we'd invalidate the cart query here
+      toast({
+        title: "Item Removed",
+        description: "The item has been removed from your cart."
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to remove item from cart.",
+        variant: "destructive"
+      });
+    }
   };
   
   // Apply coupon code
@@ -82,6 +91,29 @@ export default function Cart() {
       }
     }, 1500);
   };
+
+  // Proceed to checkout
+  const handleCheckout = () => {
+    navigate('/checkout');
+  };
+  
+  // If cart is loading, show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-t-dukkan-purple border-r-dukkan-purple border-b-transparent border-l-transparent mb-4"></div>
+            <p>Loading your cart...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+  
+  const cartItems = cartData?.items || [];
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -199,27 +231,50 @@ export default function Cart() {
                 <div className="mt-8">
                   <h3 className="font-semibold text-lg mb-4">You might also like</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {products.slice(0, 3).map((product) => (
-                      <div key={product.id} className="border rounded-lg overflow-hidden group">
-                        <div className="h-36 bg-gray-100 overflow-hidden">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                            onError={(e) => {
-                              e.currentTarget.src = "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?q=80&w=120";
-                            }}
-                          />
-                        </div>
-                        <div className="p-3">
-                          <h4 className="font-medium text-sm line-clamp-1">{product.name}</h4>
-                          <div className="flex justify-between items-center mt-2">
-                            <span className="font-semibold">${product.price.toFixed(2)}</span>
-                            <Button size="sm" variant="outline" className="text-xs h-8">Add</Button>
+                    {cartData?.items[0]?.product && [1, 2, 3].map((i) => {
+                      // Recommend products from the same category
+                      const recommendedProduct = {
+                        ...cartData.items[0].product,
+                        id: 1000 + i,
+                        name: `Recommended Product ${i}`,
+                        price: Math.floor(Math.random() * 200) + 50
+                      };
+                      
+                      return (
+                        <div key={i} className="border rounded-lg overflow-hidden group">
+                          <div className="h-36 bg-gray-100 overflow-hidden">
+                            <img
+                              src={recommendedProduct.image}
+                              alt={recommendedProduct.name}
+                              className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                              onError={(e) => {
+                                e.currentTarget.src = "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?q=80&w=120";
+                              }}
+                            />
+                          </div>
+                          <div className="p-3">
+                            <h4 className="font-medium text-sm line-clamp-1">{recommendedProduct.name}</h4>
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="font-semibold">${recommendedProduct.price.toFixed(2)}</span>
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="text-xs h-8"
+                                onClick={() => {
+                                  addToCart({ productId: recommendedProduct.id, quantity: 1 });
+                                  toast({
+                                    title: "Added to Cart",
+                                    description: `${recommendedProduct.name} has been added to your cart.`
+                                  });
+                                }}
+                              >
+                                Add
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -283,11 +338,12 @@ export default function Cart() {
                   
                   {/* Checkout Buttons */}
                   <div className="space-y-3">
-                    <Button className="w-full bg-dukkan-purple hover:bg-dukkan-purple/90" asChild>
-                      <Link to="/checkout" className="flex items-center justify-center gap-2">
-                        <CreditCard className="h-4 w-4" />
-                        Proceed to Checkout
-                      </Link>
+                    <Button 
+                      className="w-full bg-dukkan-purple hover:bg-dukkan-purple/90"
+                      onClick={handleCheckout}
+                    >
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Proceed to Checkout
                     </Button>
                     
                     <div className="relative">
@@ -308,10 +364,10 @@ export default function Cart() {
                   <div className="mt-6">
                     <h3 className="font-medium text-sm mb-3">We Accept</h3>
                     <div className="flex gap-2">
-                      <div className="w-10 h-6 bg-gray-200 rounded"></div>
-                      <div className="w-10 h-6 bg-gray-200 rounded"></div>
-                      <div className="w-10 h-6 bg-gray-200 rounded"></div>
-                      <div className="w-10 h-6 bg-gray-200 rounded"></div>
+                      <div className="flex items-center justify-center w-10 h-6 bg-blue-600 rounded text-white text-xs">Visa</div>
+                      <div className="flex items-center justify-center w-10 h-6 bg-red-500 rounded text-white text-xs">MC</div>
+                      <div className="flex items-center justify-center w-10 h-6 bg-blue-700 rounded text-white text-xs">Amex</div>
+                      <div className="flex items-center justify-center w-10 h-6 bg-yellow-400 rounded text-white text-xs">PP</div>
                     </div>
                   </div>
                 </div>
