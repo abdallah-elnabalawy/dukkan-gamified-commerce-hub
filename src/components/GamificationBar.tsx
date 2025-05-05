@@ -5,16 +5,28 @@ import { Award, Gift, Flame, Zap } from "lucide-react";
 import { userGameProfile } from "@/lib/data";
 import { useState, useEffect } from "react";
 
-export default function GamificationBar() {
+interface GamificationBarProps {
+  level?: number;
+  currentXP?: number;
+  xpToNextLevel?: number;
+  tier?: string;
+}
+
+export default function GamificationBar({ 
+  level = userGameProfile.level, 
+  currentXP = userGameProfile.currentXP, 
+  xpToNextLevel = userGameProfile.xpToNextLevel,
+  tier = userGameProfile.tier
+}: GamificationBarProps) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const progressPercentage = (userGameProfile.currentXP / userGameProfile.xpToNextLevel) * 100;
+    const progressPercentage = (currentXP / xpToNextLevel) * 100;
     
     // Animate progress bar
     const timer = setTimeout(() => setProgress(progressPercentage), 300);
     return () => clearTimeout(timer);
-  }, [userGameProfile.currentXP, userGameProfile.xpToNextLevel]);
+  }, [currentXP, xpToNextLevel]);
 
   return (
     <div className="bg-gradient-to-r from-dukkan-navy to-dukkan-purple rounded-xl p-4 text-white mb-8">
@@ -27,12 +39,12 @@ export default function GamificationBar() {
             <div>
               <span className="text-sm font-medium block">Player Level</span>
               <div className="flex items-center gap-1">
-                <span className="font-bold text-xl">{userGameProfile.level}</span>
+                <span className="font-bold text-xl">{level}</span>
                 <Badge variant="outline" className={`tier-badge ${
-                  userGameProfile.tier === 'bronze' ? 'tier-bronze' : 
-                  userGameProfile.tier === 'silver' ? 'tier-silver' : 'tier-gold'
+                  tier === 'bronze' ? 'tier-bronze' : 
+                  tier === 'silver' ? 'tier-silver' : 'tier-gold'
                 }`}>
-                  {userGameProfile.tier}
+                  {tier}
                 </Badge>
               </div>
             </div>
@@ -40,8 +52,8 @@ export default function GamificationBar() {
           
           <div className="flex-1 max-w-md">
             <div className="flex justify-between text-xs mb-1">
-              <span>XP: {userGameProfile.currentXP}</span>
-              <span>Next Level: {userGameProfile.xpToNextLevel}</span>
+              <span>XP: {currentXP}</span>
+              <span>Next Level: {xpToNextLevel}</span>
             </div>
             <Progress value={progress} className="h-2 bg-white/20" indicatorColor="bg-gradient-to-r from-dukkan-gold to-dukkan-purple" />
           </div>
