@@ -1,11 +1,12 @@
 
 import { Link } from "react-router-dom";
-import { ShoppingCart, Heart, Award } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import { Product } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { useAddToCart } from "@/hooks/useCart";
+import { useWishlist } from "@/contexts/WishlistContext";
 
 interface ProductCardProps {
   product: Product;
@@ -13,6 +14,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { mutate: addToCart } = useAddToCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = () => {
     addToCart({ productId: product.id, quantity: 1 }, {
@@ -25,11 +27,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     });
   };
 
-  const addToWishlist = () => {
-    toast({
-      title: "Added to Wishlist",
-      description: `${product.name} has been added to your wishlist. +10 XP!`,
-    });
+  const handleWishlistToggle = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product.id, product.name);
+    }
   };
 
   return (
@@ -48,10 +51,14 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
         <div className="absolute top-2 right-2 flex flex-col gap-2">
           <button 
-            onClick={addToWishlist}
-            className="bg-white p-2 rounded-full shadow-md hover:bg-dukkan-purple hover:text-white transition-colors duration-200"
+            onClick={handleWishlistToggle}
+            className={`p-2 rounded-full shadow-md transition-colors duration-200 ${
+              isInWishlist(product.id) 
+                ? "bg-dukkan-purple text-white" 
+                : "bg-white hover:bg-dukkan-purple hover:text-white"
+            }`}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-4 w-4" fill={isInWishlist(product.id) ? "currentColor" : "none"} />
           </button>
         </div>
         <div className="absolute bottom-2 left-2">
@@ -80,7 +87,9 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-start justify-between mt-3">
           <span className="font-bold text-lg">${product.price.toFixed(2)}</span>
           <div className="flex items-center gap-1 text-xs text-dukkan-purple">
-            <Award className="h-4 w-4" />
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
             <span>+{product.gamificationPoints} pts</span>
           </div>
         </div>

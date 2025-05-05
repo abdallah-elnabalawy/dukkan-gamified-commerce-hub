@@ -78,11 +78,13 @@ export default function OrderSuccess() {
             {userProfile && (
               <div className="mb-8">
                 <h3 className="font-semibold text-center mb-3">You just earned points!</h3>
-                <GamificationBar 
-                  level={userProfile.level}
-                  currentXP={userProfile.currentXP} 
-                  xpToNextLevel={userProfile.xpToNextLevel}
-                />
+                {userProfile && (
+                  <GamificationBar 
+                    level={userProfile.level}
+                    currentXP={userProfile.currentXP} 
+                    xpToNextLevel={userProfile.xpToNextLevel}
+                  />
+                )}
               </div>
             )}
             

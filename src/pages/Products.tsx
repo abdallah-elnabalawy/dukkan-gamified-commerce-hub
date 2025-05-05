@@ -10,19 +10,28 @@ import { ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { Product, products as allProducts } from "@/lib/data";
+import { Product, products as allProducts, categories } from "@/lib/data";
 
 const Products = () => {
   const { category } = useParams();
   const [priceRange, setPriceRange] = useState([0, 1500]);
   const [sortBy, setSortBy] = useState("newest");
   const [filterNewOnly, setFilterNewOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   
-  // Filter products based on category
+  // Find the category object by its ID or name
+  const categoryObj = category ? categories.find(
+    cat => cat.id.toString() === category || cat.name.toLowerCase() === category.toLowerCase()
+  ) : null;
+  
+  // Filter products based on category, price range, and search query
   const filteredProducts = allProducts.filter(product => {
     // If category is provided, filter by it
-    if (category && product.category.toLowerCase() !== category.toLowerCase()) {
-      return false;
+    if (category) {
+      const categoryName = categoryObj ? categoryObj.name : category;
+      if (product.category.toLowerCase() !== categoryName.toLowerCase()) {
+        return false;
+      }
     }
     
     // Filter by price range
@@ -32,6 +41,11 @@ const Products = () => {
     
     // Filter new items only if checked
     if (filterNewOnly && !product.isNew) {
+      return false;
+    }
+    
+    // Filter by search query if it exists
+    if (searchQuery && !product.name.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
     
@@ -52,13 +66,21 @@ const Products = () => {
   });
   
   const getCategoryTitle = () => {
+    if (categoryObj) {
+      return categoryObj.name;
+    }
     if (!category) return "All Products";
     return category.charAt(0).toUpperCase() + category.slice(1);
   };
   
+  // Handle search from navbar
+  const handleSearchUpdate = (query: string) => {
+    setSearchQuery(query);
+  };
+  
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Navbar onSearch={handleSearchUpdate} />
       
       <div className="container mx-auto px-4 py-8 flex-1">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
@@ -163,6 +185,7 @@ const Products = () => {
                 setPriceRange([0, 1500]);
                 setSortBy("newest");
                 setFilterNewOnly(false);
+                setSearchQuery("");
               }}>
                 Reset Filters
               </Button>
